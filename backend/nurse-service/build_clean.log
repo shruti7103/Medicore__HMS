@@ -1,0 +1,42 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< com.medicore:nurse-service >---------------------
+[INFO] Building nurse-service 1.0.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ nurse-service ---
+[INFO] Deleting D:\Shruti HMS\backend\nurse-service\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ nurse-service ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ nurse-service ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 17 source files with javac [debug release 17] to target\classes
+[WARNING] /D:/Shruti HMS/backend/nurse-service/src/main/java/com/medicore/nurse/entity/PatientAssignment.java:[10,80] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Shruti HMS/backend/nurse-service/src/main/java/com/medicore/nurse/entity/NursingTask.java:[10,74] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Shruti HMS/backend/nurse-service/src/main/java/com/medicore/nurse/entity/Nurse.java:[11,59] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ nurse-service ---
+[INFO] skip non existing resourceDirectory D:\Shruti HMS\backend\nurse-service\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ nurse-service ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] --- surefire:3.1.2:test (default-test) @ nurse-service ---
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.3.0:jar (default-jar) @ nurse-service ---
+[INFO] Building jar: D:\Shruti HMS\backend\nurse-service\target\nurse-service-1.0.0.jar
+[INFO] 
+[INFO] --- spring-boot:3.2.5:repackage (repackage) @ nurse-service ---
+[INFO] Replacing main artifact D:\Shruti HMS\backend\nurse-service\target\nurse-service-1.0.0.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\Shruti HMS\backend\nurse-service\target\nurse-service-1.0.0.jar.original
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  11.539 s
+[INFO] Finished at: 2026-07-03T19:27:26+05:30
+[INFO] ------------------------------------------------------------------------

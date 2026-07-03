@@ -15,16 +15,40 @@ import java.util.List;
 public class NurseController {
     private final NurseService nurseService;
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN','DOCTOR','NURSE')")
+    public ApiResponse<List<NurseResponse>> listNurses() {
+        return ApiResponse.ok(nurseService.findAllNurses());
+    }
+
     @GetMapping("/assignments")
-    @PreAuthorize("hasRole('NURSE')")
+    @PreAuthorize("hasAnyRole('NURSE','DOCTOR','ADMIN')")
     public ApiResponse<List<AssignmentResponse>> assignments() {
         return ApiResponse.ok(nurseService.assignments());
     }
 
+    @GetMapping("/assignments/all")
+    @PreAuthorize("hasAnyRole('NURSE','DOCTOR','ADMIN')")
+    public ApiResponse<List<AssignmentResponse>> allAssignments() {
+        return ApiResponse.ok(nurseService.findAllAssignments());
+    }
+
+    @PostMapping("/assignments")
+    @PreAuthorize("hasAnyRole('DOCTOR','ADMIN')")
+    public ApiResponse<AssignmentResponse> createAssignment(@Valid @RequestBody AssignmentRequest req) {
+        return ApiResponse.ok(nurseService.assignPatient(req));
+    }
+
     @GetMapping("/tasks")
-    @PreAuthorize("hasRole('NURSE')")
+    @PreAuthorize("hasAnyRole('NURSE','DOCTOR','ADMIN')")
     public ApiResponse<List<TaskResponse>> tasks() {
         return ApiResponse.ok(nurseService.tasks());
+    }
+
+    @PostMapping("/tasks")
+    @PreAuthorize("hasAnyRole('DOCTOR','ADMIN')")
+    public ApiResponse<TaskResponse> createTask(@Valid @RequestBody TaskRequest req) {
+        return ApiResponse.ok(nurseService.createTask(req));
     }
 
     @PatchMapping("/tasks/{id}/complete")

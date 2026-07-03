@@ -1,18 +1,27 @@
-const styles: Record<string, string> = {
-  PENDING: 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300',
-  CONFIRMED: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300',
-  COMPLETED: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300',
-  CANCELLED: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300',
-  NO_SHOW: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-  UNPAID: 'bg-amber-100 text-amber-800',
-  PAID: 'bg-green-100 text-green-800',
-  DISPENSED: 'bg-green-100 text-green-800',
+type Status = string;
+
+const MAP: Record<string, { label: string; cls: string; dot?: string }> = {
+  PENDING:     { label: 'Pending',     cls: 'badge-warning', dot: '#f59e0b' },
+  CONFIRMED:   { label: 'Confirmed',   cls: 'badge-primary', dot: 'var(--color-primary)' },
+  COMPLETED:   { label: 'Completed',   cls: 'badge-success', dot: 'var(--color-success)' },
+  CANCELLED:   { label: 'Cancelled',   cls: 'badge-danger',  dot: 'var(--color-danger)' },
+  NO_SHOW:     { label: 'No Show',     cls: 'badge-muted',   dot: 'var(--color-muted)' },
+  DISPENSED:   { label: 'Dispensed',   cls: 'badge-success', dot: 'var(--color-success)' },
+  UNPAID:      { label: 'Unpaid',      cls: 'badge-danger',  dot: 'var(--color-danger)' },
+  PAID:        { label: 'Paid',        cls: 'badge-success', dot: 'var(--color-success)' },
+  TODO:        { label: 'To Do',       cls: 'badge-muted' },
+  IN_PROGRESS: { label: 'In Progress', cls: 'badge-info',    dot: 'var(--color-info)' },
+  DONE:        { label: 'Done',        cls: 'badge-success', dot: 'var(--color-success)' },
+  ACTIVE:      { label: 'Active',      cls: 'badge-success', dot: 'var(--color-success)' },
+  INACTIVE:    { label: 'Inactive',    cls: 'badge-muted' },
 };
 
-export default function StatusChip({ status }: { status: string }) {
+export default function StatusChip({ status }: { status: Status }) {
+  const s = MAP[status] ?? { label: status, cls: 'badge-muted' };
   return (
-    <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${styles[status] || styles.PENDING}`}>
-      {status.replace('_', ' ')}
+    <span className={`badge ${s.cls}`}>
+      {s.dot && <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: s.dot }} />}
+      {s.label}
     </span>
   );
 }

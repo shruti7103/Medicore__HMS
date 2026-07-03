@@ -51,9 +51,51 @@ public class NurseService {
                 .build());
     }
 
+    public List<NurseResponse> findAllNurses() {
+        return nurseRepository.findAll().stream().map(this::toNurseResponse).collect(Collectors.toList());
+    }
+
+    public List<AssignmentResponse> findAllAssignments() {
+        return assignmentRepository.findAll().stream().map(this::toAssign).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public AssignmentResponse assignPatient(AssignmentRequest req) {
+        PatientAssignment a = PatientAssignment.builder()
+                .nurseId(req.getNurseId())
+                .patientId(req.getPatientId())
+                .assignedBy(req.getAssignedBy())
+                .status(AssignmentStatus.ACTIVE)
+                .notes(req.getNotes())
+                .build();
+        return toAssign(assignmentRepository.save(a));
+    }
+
+    @Transactional
+    public TaskResponse createTask(TaskRequest req) {
+        NursingTask t = NursingTask.builder()
+                .patientId(req.getPatientId())
+                .assignedNurseId(req.getAssignedNurseId())
+                .createdBy(req.getCreatedBy())
+                .title(req.getTitle())
+                .status(TaskStatus.TODO)
+                .dueAt(req.getDueAt())
+                .build();
+        return toTask(taskRepository.save(t));
+    }
+
+    private NurseResponse toNurseResponse(Nurse n) {
+        NurseResponse r = new NurseResponse();
+        r.setId(n.getId()); r.setUserId(n.getUserId()); r.setFirstName(n.getFirstName());
+        r.setLastName(n.getLastName()); r.setDepartment(n.getDepartment());
+        r.setShiftPattern(n.getShiftPattern()); r.setIsActive(n.getIsActive());
+        return r;
+    }
+
     private AssignmentResponse toAssign(PatientAssignment a) {
         AssignmentResponse r = new AssignmentResponse();
         r.setId(a.getId()); r.setPatientId(a.getPatientId());
+        r.setNurseId(a.getNurseId()); r.setAssignedBy(a.getAssignedBy());
         r.setStatus(a.getStatus()); r.setNotes(a.getNotes());
         return r;
     }
