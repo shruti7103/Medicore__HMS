@@ -1,0 +1,22 @@
+server:
+ port: 8088
+spring:
+ application:
+  name: nurse-service
+ datasource:
+  url: jdbc:mysql://localhost:3306/nurse_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+  username: root
+  password: ${DB_PASSWORD:root}
+  driver-class-name: com.mysql.cj.jdbc.Driver
+ jpa:
+  hibernate:
+   ddl-auto: validate
+  properties:
+   hibernate:
+    dialect: org.hibernate.dialect.MySQL8Dialect
+eureka:
+ client:
+  service-url:
+   defaultZone: http://localhost:8761/eureka/
+jwt:
+ secret: medicore-super-secret-key-change-in-production-min-256-bits!!

@@ -1,0 +1,181 @@
+version: '3.8'
+
+# Build JARs first: cd backend && mvn package -Dmaven.test.skip=true
+
+x-java-service: &java-service
+  build:
+    context: .
+    dockerfile: docker/Dockerfile.service
+  environment:
+    DB_PASSWORD: ${DB_PASSWORD:-root}
+    EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka:8761/eureka/
+  depends_on:
+    eureka:
+      condition: service_started
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: medicore-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-root}
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost', '-p${DB_PASSWORD:-root}']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  eureka:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/eureka-server/target/eureka-server-1.0.0.jar
+    ports:
+      - '8761:8761'
+
+  gateway:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/api-gateway/target/api-gateway-1.0.0.jar
+    ports:
+      - '8080:8080'
+
+  auth-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/auth-service/target/auth-service-1.0.0.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  patient-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/patient-service/target/patient-service-1.0.0.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  doctor-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/doctor-service/target/doctor-service-1.0.0.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  appointment-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/appointment-service/target/appointment-service-1.0.0.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  billing-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/billing-service/target/billing-service-1.0.0.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  pharmacy-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/pharmacy-service/target/pharmacy-service-1.0.0.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  notification-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/notification-service/target/notification-service-1.0.0.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  nurse-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/nurse-service/target/nurse-service-1.0.0.jar
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+
+  analytics-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/analytics-service/target/analytics-service-1.0.0.jar
+
+  symptom-check-service:
+    <<: *java-service
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.service
+      args:
+        JAR_FILE: backend/symptom-check-service/target/symptom-check-service-1.0.0.jar
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - '5173:80'
+    depends_on:
+      - gateway
+
+volumes:
+  mysql_data:

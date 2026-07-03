@@ -1,0 +1,12 @@
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\repository\AvailabilitySlotRepository.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\dto\DoctorDtos.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\controller\DoctorController.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\entity\AvailabilitySlot.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\entity\Doctor.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\repository\DoctorRepository.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\entity\DayOfWeek.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\config\SecurityConfig.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\service\DoctorService.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\DoctorServiceApplication.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\config\DoctorDataInitializer.java
+D:\Shruti HMS\backend\doctor-service\src\main\java\com\medicore\doctor\controller\InternalStatsController.java

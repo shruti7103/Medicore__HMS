@@ -1,0 +1,13 @@
+com\medicore\appointment\dto\AppointmentDtos$BookRequest.class
+com\medicore\appointment\dto\AppointmentDtos.class
+com\medicore\appointment\entity\Appointment$AppointmentBuilder.class
+com\medicore\appointment\repository\AppointmentRepository.class
+com\medicore\appointment\dto\AppointmentDtos$StatusRequest.class
+com\medicore\appointment\entity\Appointment.class
+com\medicore\appointment\config\SecurityConfig.class
+com\medicore\appointment\dto\AppointmentDtos$AppointmentResponse.class
+com\medicore\appointment\AppointmentServiceApplication.class
+com\medicore\appointment\controller\AppointmentController.class
+com\medicore\appointment\controller\InternalStatsController.class
+com\medicore\appointment\entity\AppointmentStatus.class
+com\medicore\appointment\service\AppointmentService.class

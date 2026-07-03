@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #0f766e;
+  --color-primary-hover: #0d6b63;
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-bg: #f7f8fa;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-ink: #1b2a4a;
+  --color-muted: #64748b;
+  --color-border: #e2e8f0;
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-danger: #dc2626;
+  --shadow-card: 0 1px 3px rgba(16, 24, 40, 0.08);
+  --radius-card: 10px;
+  --radius-btn: 8px;
+}
+
+.dark {
+  --color-primary: #14b8a6;
+  --color-primary-hover: #0f766e;
+  --color-accent: #60a5fa;
+  --color-accent-hover: #3b82f6;
+  --color-bg: #0f1720;
+  --color-surface: #1b2634;
+  --color-surface-elevated: #243044;
+  --color-ink: #e5e9ef;
+  --color-muted: #94a3b8;
+  --color-border: #2d3a4d;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply font-sans antialiased;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white transition-colors;
+    background-color: var(--color-primary);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+  }
+
+  .btn-primary:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border px-4 py-2.5 text-sm font-medium transition-colors;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background-color: var(--color-bg);
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border px-3.5 py-2.5 text-sm outline-none transition-colors;
+    border-color: var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+  }
+
+  .input-field:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+
+  .card {
+    @apply rounded-[10px] border;
+    background-color: var(--color-surface);
+    border-color: var(--color-border);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-accent-teal {
+    border-top: 4px solid var(--color-primary);
+  }
+
+  .card-accent-indigo {
+    border-top: 4px solid var(--color-accent);
+  }
+
+  .card-accent-amber {
+    border-top: 4px solid var(--color-warning);
+  }
+}

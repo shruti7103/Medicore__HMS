@@ -1,0 +1,1 @@
+-- department_db (doctor-service also uses departments table in doctor_db - add to 03)

@@ -1,0 +1,5 @@
+com\medicore\symptom\config\SecurityConfig.class
+com\medicore\symptom\SymptomCheckServiceApplication.class
+com\medicore\symptom\controller\SymptomController.class
+com\medicore\symptom\controller\SymptomController$Request.class
+com\medicore\symptom\controller\SymptomController$Result.class

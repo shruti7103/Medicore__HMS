@@ -1,0 +1,3 @@
+com\medicore\gateway\filter\JwtGatewayFilter.class
+com\medicore\gateway\GatewayApplication.class
+com\medicore\gateway\config\SecurityConfig.class

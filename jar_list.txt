@@ -1,0 +1,13 @@
+﻿D:\Shruti HMS\backend\analytics-service\target\analytics-service-1.0.0.jar
+D:\Shruti HMS\backend\api-gateway\target\api-gateway-1.0.0.jar
+D:\Shruti HMS\backend\appointment-service\target\appointment-service-1.0.0.jar
+D:\Shruti HMS\backend\auth-service\target\auth-service-1.0.0.jar
+D:\Shruti HMS\backend\billing-service\target\billing-service-1.0.0.jar
+D:\Shruti HMS\backend\common\target\common-1.0.0.jar
+D:\Shruti HMS\backend\config-server\target\config-server-1.0.0.jar
+D:\Shruti HMS\backend\doctor-service\target\doctor-service-1.0.0.jar
+D:\Shruti HMS\backend\eureka-server\target\eureka-server-1.0.0.jar
+D:\Shruti HMS\backend\notification-service\target\notification-service-1.0.0.jar
+D:\Shruti HMS\backend\nurse-service\target\nurse-service-1.0.0.jar
+D:\Shruti HMS\backend\pharmacy-service\target\pharmacy-service-1.0.0.jar
+D:\Shruti HMS\backend\symptom-check-service\target\symptom-check-service-1.0.0.jar

@@ -1,0 +1,10 @@
+com\medicore\analytics\dto\AnalyticsDtos$Summary.class
+com\medicore\analytics\dto\AnalyticsDtos.class
+com\medicore\analytics\AnalyticsServiceApplication.class
+com\medicore\analytics\dto\AnalyticsDtos$DeptSplit.class
+com\medicore\analytics\service\AnalyticsService$1.class
+com\medicore\analytics\service\AnalyticsService.class
+com\medicore\analytics\config\SecurityConfig.class
+com\medicore\analytics\dto\AnalyticsDtos$RevenuePoint.class
+com\medicore\analytics\controller\AnalyticsController.class
+com\medicore\analytics\service\AnalyticsService$2.class
