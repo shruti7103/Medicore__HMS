@@ -62,13 +62,3 @@ mvn package "-Dmaven.test.skip=true"
 ## Environment
 
 Set `DB_PASSWORD` in `.env` at project root (used by setup scripts and services).
-
-## Docker
-
-Build JARs first, then:
-
-```powershell
-docker compose up --build
-```
-
-See `docker/` for service Dockerfiles.
