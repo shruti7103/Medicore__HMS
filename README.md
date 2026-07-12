@@ -1,4 +1,4 @@
-# MediCore HMS — Java-only stack (no Python)
+# MediCore HMS — Java-only stack with Spring Boot Microservices
 
 Hospital Management System with 6 roles, Spring Boot microservices, React frontend, and MySQL.
 
