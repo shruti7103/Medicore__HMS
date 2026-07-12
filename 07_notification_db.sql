@@ -17,12 +17,3 @@ CREATE TABLE notifications (
 
 CREATE INDEX idx_notif_user ON notifications(user_id, is_read);
 
-CREATE TABLE messages (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  sender_id BIGINT NOT NULL,
-  receiver_id BIGINT NOT NULL,
-  sender_name VARCHAR(120) NOT NULL,
-  content TEXT NOT NULL,
-  is_read BOOLEAN NOT NULL DEFAULT FALSE,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;

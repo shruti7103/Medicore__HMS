@@ -22,6 +22,7 @@ public class DepartmentController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
+    @SuppressWarnings("null")
     public Department createDepartment(@RequestBody Department department) {
         if (department.getIsActive() == null) department.setIsActive(true);
         return departmentRepository.save(department);
@@ -29,6 +30,7 @@ public class DepartmentController {
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @SuppressWarnings("null")
     public Department updateDepartment(@PathVariable Long id, @RequestBody Department department) {
         return departmentRepository.findById(id).map(existing -> {
             existing.setName(department.getName());

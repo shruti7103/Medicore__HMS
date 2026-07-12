@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusChip from '../../components/StatusChip';
 import StatCard from '../../components/StatCard';
@@ -14,12 +14,9 @@ import {
   Users, Calendar, Plus, Search, CheckCircle2, AlertTriangle,
   Phone, RefreshCw, Clock, User, FileText, IndianRupee
 } from 'lucide-react';
-
 const localizer = momentLocalizer(moment);
 const DnDCalendar = withDragAndDrop(BigCalendar as any);
-
 interface BookForm { patientId: string; doctorId: string; date: string; time: string; reason: string; }
-
 export default function ReceptionistDashboard() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -30,38 +27,38 @@ export default function ReceptionistDashboard() {
   const [booking, setBooking] = useState(false);
   const [bookForm, setBookForm] = useState<BookForm>({ patientId: '', doctorId: '', date: new Date().toISOString().slice(0,10), time: '09:00', reason: '' });
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
-
   const showToast = (msg: string, type: 'success'|'error' = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500);
   };
-
   const load = useCallback(() => {
     api.get('/patients').then((r) => setPatients(unwrap(r))).catch(() => {});
     api.get('/appointments').then((r) => setAppointments(unwrap(r))).catch(() => {});
     api.get('/doctors').then((r) => setDoctors(unwrap(r) ?? [])).catch(() => {});
   }, []);
-
   useEffect(() => { load(); }, [load]);
-
   const filtered = patients.filter((p) =>
     `${p.firstName} ${p.lastName} ${p.phone ?? ''}`.toLowerCase().includes(search.toLowerCase()));
-
   const today = new Date().toISOString().slice(0, 10);
   const todayAppts = appointments.filter(a => a.slotStart.startsWith(today));
-
   const events = appointments.map(a => ({
     id: a.id, title: `Patient #${a.patientId}`, start: new Date(a.slotStart),
     end: new Date(new Date(a.slotStart).getTime() + 30 * 60000),
     resource: a,
   }));
-
   const onEventDrop = async ({ event, start }: any) => {
     try {
-      await api.patch(`/appointments/${event.id}/reschedule`, null, { params: { newTime: (start as Date).toISOString() } });
+      const slotStart = (start as Date).toISOString();
+      const slotEnd = new Date(new Date(slotStart).getTime() + 30 * 60000).toISOString();
+      await api.put(`/appointments/${event.id}/reschedule`, {
+        patientId: event.resource.patientId,
+        doctorId: event.resource.doctorId,
+        slotStart,
+        slotEnd,
+        reason: event.resource.reason || 'General consultation'
+      });
       load(); showToast('Appointment rescheduled');
     } catch { showToast('Reschedule failed', 'error'); }
   };
-
   const bookAppointment = async () => {
     if (!bookForm.patientId || !bookForm.doctorId) return showToast('Select patient and doctor', 'error');
     setBooking(true);
@@ -80,19 +77,16 @@ export default function ReceptionistDashboard() {
       showToast(e?.response?.data?.message ?? 'Booking failed', 'error');
     } finally { setBooking(false); }
   };
-
   const cancelAppt = async (id: number) => {
     if (!confirm('Cancel this appointment?')) return;
     try { await api.patch(`/appointments/${id}/status`, { status: 'CANCELLED' }); load(); showToast('Appointment cancelled'); }
     catch { showToast('Failed to cancel', 'error'); }
   };
-
   return (
     <DashboardLayout
       title="Receptionist"
       links={[
         { to: '/receptionist', label: 'Front Desk' },
-        { to: '/messages', label: 'Messages' },
       ]}
       actions={<button className="btn-secondary text-xs" onClick={load}><RefreshCw size={13}/></button>}
     >
@@ -101,7 +95,6 @@ export default function ReceptionistDashboard() {
           {toast.type === 'success' ? <CheckCircle2 size={16}/> : <AlertTriangle size={16}/>} {toast.msg}
         </div>
       )}
-
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="page-title gradient-text">Front Desk</h1>
@@ -111,7 +104,6 @@ export default function ReceptionistDashboard() {
           <Plus size={16}/> Book Appointment
         </button>
       </div>
-
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-4 mb-8 stagger-children">
         <StatCard label="Today's Appointments" value={todayAppts.length} icon={<Calendar size={22}/>} accent="teal" />
@@ -119,7 +111,6 @@ export default function ReceptionistDashboard() {
         <StatCard label="Total Patients" value={patients.length} icon={<Users size={22}/>} accent="indigo" />
         <StatCard label="Completed Today" value={todayAppts.filter(a=>a.status==='COMPLETED').length} icon={<CheckCircle2 size={22}/>} accent="green" />
       </div>
-
       {/* Tabs */}
       <div className="tabs mb-6">
         {([
@@ -133,7 +124,6 @@ export default function ReceptionistDashboard() {
           </button>
         ))}
       </div>
-
       {/* TODAY TAB */}
       {tab === 'today' && (
         <div className="animate-fade-in space-y-3">
@@ -148,7 +138,7 @@ export default function ReceptionistDashboard() {
                   <div>
                     <p className="font-semibold text-sm">Patient #{a.patientId}</p>
                     <p className="text-xs" style={{ color: 'var(--color-muted)' }}>
-                      {new Date(a.slotStart).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} · Dr. #{a.doctorId}
+                      {new Date(a.slotStart).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })} Â· Dr. #{a.doctorId}
                     </p>
                     {a.reason && <p className="text-xs mt-0.5">{a.reason}</p>}
                   </div>
@@ -164,7 +154,6 @@ export default function ReceptionistDashboard() {
           ))}
         </div>
       )}
-
       {/* CALENDAR TAB */}
       {tab === 'calendar' && (
         <div className="card p-5 animate-fade-in">
@@ -201,7 +190,6 @@ export default function ReceptionistDashboard() {
           )}
         </div>
       )}
-
       {/* PATIENTS TAB */}
       {tab === 'patients' && (
         <div className="animate-fade-in">
@@ -231,7 +219,7 @@ export default function ReceptionistDashboard() {
                         </div>
                       </td>
                       <td>
-                        {p.phone ? <><Phone size={12} className="inline mr-1"/>{p.phone}</> : <span style={{ color: 'var(--color-muted)' }}>—</span>}
+                        {p.phone ? <><Phone size={12} className="inline mr-1"/>{p.phone}</> : <span style={{ color: 'var(--color-muted)' }}>â€”</span>}
                       </td>
                       <td>
                         <span className="badge badge-primary">{appointments.filter(a=>a.patientId===p.id).length} appts</span>
@@ -245,7 +233,6 @@ export default function ReceptionistDashboard() {
           </div>
         </div>
       )}
-
       {/* BOOK TAB */}
       {tab === 'book' && (
         <div className="card p-6 max-w-2xl animate-fade-in">
@@ -263,7 +250,7 @@ export default function ReceptionistDashboard() {
                 <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-muted)' }}>DOCTOR *</label>
                 <select className="input-field" value={bookForm.doctorId} onChange={e => setBookForm(f=>({...f, doctorId: e.target.value}))}>
                   <option value="">Select doctor...</option>
-                  {doctors.map(d => <option key={d.id} value={d.id}>Dr. {d.firstName} {d.lastName} — {d.department ?? 'General'}</option>)}
+                  {doctors.map(d => <option key={d.id} value={d.id}>Dr. {d.firstName} {d.lastName} â€” {d.department ?? 'General'}</option>)}
                 </select>
               </div>
               <div>

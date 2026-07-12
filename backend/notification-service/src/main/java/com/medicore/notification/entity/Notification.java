@@ -10,6 +10,7 @@ public class Notification {
     @Column(nullable=false,length=60) private String type;
     @Column(nullable=false,length=150) private String title;
     @Column(nullable=false,length=500) private String message;
+    @Builder.Default
     @Column(name="is_read",nullable=false) private Boolean isRead=false;
     @Column(name="created_at",insertable=false,updatable=false) private LocalDateTime createdAt;
 }

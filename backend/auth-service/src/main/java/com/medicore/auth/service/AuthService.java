@@ -34,7 +34,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
 
-    @Transactional public AuthResponse register(RegisterRequest req) {
+    @SuppressWarnings("null") @Transactional public AuthResponse register(RegisterRequest req) {
         if (userRepository.existsByEmail(req.getEmail())) throw new BadRequestException("Email already registered");
         User user = User.builder().name(req.getName()).email(req.getEmail())
                 .passwordHash(passwordEncoder.encode(req.getPassword())).role(Role.PATIENT).isActive(true).build();
@@ -48,7 +48,7 @@ public class AuthService {
         return tokens(user);
     }
 
-    @Transactional public AuthResponse refresh(RefreshRequest req) {
+    @SuppressWarnings("null") @Transactional public AuthResponse refresh(RefreshRequest req) {
         String hash = hash(req.getRefreshToken());
         RefreshToken rt = refreshTokenRepository.findByTokenHashAndRevokedFalse(hash)
                 .orElseThrow(() -> new BadRequestException("Invalid refresh token"));
@@ -64,12 +64,13 @@ public class AuthService {
                 .ifPresent(t -> { t.setRevoked(true); refreshTokenRepository.save(t); });
     }
 
+    @SuppressWarnings("null")
     public UserResponse me() {
         Long id = SecurityUtils.currentUserId();
         return toResponse(userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found")));
     }
 
-    @Transactional public UserResponse createUser(CreateUserRequest req) {
+    @SuppressWarnings("null") @Transactional public UserResponse createUser(CreateUserRequest req) {
         if (userRepository.existsByEmail(req.getEmail())) throw new BadRequestException("Email exists");
         User user = User.builder().name(req.getName()).email(req.getEmail())
                 .passwordHash(passwordEncoder.encode(req.getPassword())).role(req.getRole()).isActive(true).build();
@@ -119,10 +120,12 @@ public class AuthService {
         }).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("null")
     private User getUser(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
+    @SuppressWarnings("null")
     private void audit(String action, String entityType, Long entityId, String details) {
         auditLogRepository.save(AuditLog.builder()
                 .userId(SecurityUtils.currentUserId()).action(action).entityType(entityType)
@@ -133,6 +136,7 @@ public class AuthService {
         return userRepository.findAll().stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    @SuppressWarnings("null")
     private AuthResponse tokens(User user) {
         List<String> permissions = rolePermissionRepository.findByRoleAndIsEnabledTrue(user.getRole().name())
                 .stream().map(RolePermission::getPermission).collect(Collectors.toList());

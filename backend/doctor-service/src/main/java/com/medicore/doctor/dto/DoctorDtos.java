@@ -3,10 +3,8 @@ import com.medicore.doctor.entity.DayOfWeek;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.List;
 
 public class DoctorDtos {
     @Data public static class DoctorRequest {

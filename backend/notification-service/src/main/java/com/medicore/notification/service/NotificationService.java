@@ -27,7 +27,7 @@ public class NotificationService {
         return notificationRepository.countByUserIdAndIsReadFalse(SecurityUtils.currentUserId());
     }
 
-    @Transactional public NotificationResponse create(CreateRequest req) {
+    @SuppressWarnings("null") @Transactional public NotificationResponse create(CreateRequest req) {
         Notification n = Notification.builder().userId(req.getUserId()).type(req.getType())
                 .title(req.getTitle()).message(req.getMessage()).isRead(false).build();
         Notification saved = notificationRepository.save(n);
@@ -35,7 +35,7 @@ public class NotificationService {
         return toResponse(saved);
     }
 
-    @Transactional public NotificationResponse markRead(Long id) {
+    @SuppressWarnings("null") @Transactional public NotificationResponse markRead(Long id) {
         Notification n = notificationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
         n.setIsRead(true);

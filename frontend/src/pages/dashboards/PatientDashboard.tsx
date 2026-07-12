@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusChip from '../../components/StatusChip';
 import StatCard from '../../components/StatCard';
@@ -10,7 +10,6 @@ import {
   CheckCircle2, AlertTriangle, Video, Clock, Plus, Brain,
   RefreshCw, User
 } from 'lucide-react';
-
 interface PatientProfile {
   id: number;
   userId: number;
@@ -22,7 +21,6 @@ interface PatientProfile {
   bloodGroup?: string;
   address?: string;
 }
-
 export default function PatientDashboard() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<PatientProfile | null>(null);
@@ -41,19 +39,16 @@ export default function PatientDashboard() {
   const [checkingSymptoms, setCheckingSymptoms] = useState(false);
   const [booking, setBooking] = useState(false);
   const [creatingProfile, setCreatingProfile] = useState(false);
-
   // Create profile form fields
   const [createForm, setCreateForm] = useState({
     firstName: user?.name?.split(' ')[0] ?? '',
     lastName: user?.name?.split(' ').slice(1).join(' ') ?? '',
     phone: '',
   });
-
   const showToast = (msg: string, type: 'success' | 'error' | 'info' = 'success') => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 4000);
   };
-
   // Load doctors (independent of patient profile)
   useEffect(() => {
     api.get('/doctors')
@@ -63,8 +58,7 @@ export default function PatientDashboard() {
       })
       .catch(() => {});
   }, []);
-
-  // Try to load patient profile — gracefully handle 404
+  // Try to load patient profile â€” gracefully handle 404
   const loadProfile = useCallback(async () => {
     setProfileLoading(true);
     setProfileError(null);
@@ -79,7 +73,7 @@ export default function PatientDashboard() {
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 404 || status === 400) {
-        // Patient doesn't have a profile record yet — prompt to create one
+        // Patient doesn't have a profile record yet â€” prompt to create one
         setProfile(null);
       } else {
         setProfileError('Could not reach patient service. Backend may be offline.');
@@ -88,9 +82,7 @@ export default function PatientDashboard() {
       setProfileLoading(false);
     }
   }, []);
-
   useEffect(() => { loadProfile(); }, [loadProfile]);
-
   // Load appointments and invoices once profile is known
   useEffect(() => {
     if (!profile) return;
@@ -107,7 +99,6 @@ export default function PatientDashboard() {
       })
       .catch(() => setInvoices([]));
   }, [profile]);
-
   // Load doctor slots
   useEffect(() => {
     if (!selectedDoctor) return;
@@ -118,7 +109,6 @@ export default function PatientDashboard() {
       })
       .catch(() => setSlots([]));
   }, [selectedDoctor, selectedDate]);
-
   const createProfile = async () => {
     if (!createForm.firstName.trim() || !createForm.lastName.trim()) {
       return showToast('First name and last name are required', 'error');
@@ -139,7 +129,6 @@ export default function PatientDashboard() {
       setCreatingProfile(false);
     }
   };
-
   const bookSlot = async (slot: { slotStart: string; slotEnd: string }) => {
     if (!profile || !selectedDoctor) return showToast('Select a doctor and date', 'error');
     setBooking(true);
@@ -161,7 +150,6 @@ export default function PatientDashboard() {
     } finally {
       setBooking(false); }
   };
-
   const checkSymptoms = async () => {
     if (!symptoms.trim()) return showToast('Describe your symptoms first', 'error');
     setCheckingSymptoms(true);
@@ -175,10 +163,9 @@ export default function PatientDashboard() {
       setCheckingSymptoms(false);
     }
   };
-
   const payInvoice = async (inv: Invoice) => {
     if (inv.status === 'PAID') return;
-    if (!confirm(`Pay ₹${inv.amount} for invoice #${inv.id}?`)) return;
+    if (!confirm(`Pay â‚¹${inv.amount} for invoice #${inv.id}?`)) return;
     try {
       await api.patch(`/billing/invoices/${inv.id}/pay`);
       if (profile) {
@@ -189,16 +176,13 @@ export default function PatientDashboard() {
       showToast('Payment recorded');
     } catch { showToast('Payment failed', 'error'); }
   };
-
   const upcomingAppts = appointments.filter(a => a.status !== 'COMPLETED' && a.status !== 'CANCELLED');
   const totalDue = invoices.filter(i => i.status === 'UNPAID').reduce((sum, i) => sum + i.amount, 0);
-
   return (
     <DashboardLayout
       title="Patient"
       links={[
         { to: '/patient', label: 'My Health' },
-        { to: '/messages', label: 'Messages' },
       ]}
       actions={
         <button className="btn-secondary text-xs" onClick={loadProfile}>
@@ -212,17 +196,15 @@ export default function PatientDashboard() {
           {toast.type === 'success' ? <CheckCircle2 size={16} /> : <AlertTriangle size={16} />} {toast.msg}
         </div>
       )}
-
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
           <h1 className="page-title gradient-text">My Health Portal</h1>
           <p className="page-subtitle">
-            {profile ? `${profile.firstName} ${profile.lastName}` : user?.name ?? 'Welcome'} — manage appointments, bills &amp; more
+            {profile ? `${profile.firstName} ${profile.lastName}` : user?.name ?? 'Welcome'} â€” manage appointments, bills &amp; more
           </p>
         </div>
       </div>
-
       {/* Backend offline banner */}
       {profileError && (
         <div className="alert alert-danger mb-6">
@@ -231,7 +213,6 @@ export default function PatientDashboard() {
           <button className="btn-secondary text-xs py-1.5 px-3 ml-auto" onClick={loadProfile}>Retry</button>
         </div>
       )}
-
       {/* Loading */}
       {profileLoading && (
         <div className="card p-8 text-center mb-6">
@@ -240,8 +221,7 @@ export default function PatientDashboard() {
           <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading your profile...</p>
         </div>
       )}
-
-      {/* NO PROFILE — Create Profile Card */}
+      {/* NO PROFILE â€” Create Profile Card */}
       {!profileLoading && !profileError && !profile && (
         <div className="card p-6 mb-6 border-2" style={{ borderColor: 'var(--color-primary)', background: 'var(--color-primary-light)' }}>
           <div className="flex items-start gap-4">
@@ -278,18 +258,16 @@ export default function PatientDashboard() {
           </div>
         </div>
       )}
-
-      {/* PROFILE EXISTS — Show full dashboard */}
+      {/* PROFILE EXISTS â€” Show full dashboard */}
       {!profileLoading && profile && (
         <>
           {/* Stats */}
           <div className="grid gap-4 sm:grid-cols-4 mb-8 stagger-children">
             <StatCard label="Upcoming Appointments" value={upcomingAppts.length} icon={<Calendar size={22} />} accent="teal" />
             <StatCard label="Total Visits" value={appointments.filter(a => a.status === 'COMPLETED').length} icon={<CheckCircle2 size={22} />} accent="green" />
-            <StatCard label="Pending Bills (₹)" value={totalDue} icon={<IndianRupee size={22} />} accent="amber" />
+            <StatCard label="Pending Bills (â‚¹)" value={totalDue} icon={<IndianRupee size={22} />} accent="amber" />
             <StatCard label="My Doctors" value={new Set(appointments.map(a => a.doctorId)).size} icon={<Stethoscope size={22} />} accent="indigo" />
           </div>
-
           {/* Tabs */}
           <div className="tabs mb-6">
             {([
@@ -304,8 +282,7 @@ export default function PatientDashboard() {
               </button>
             ))}
           </div>
-
-          {/* ── OVERVIEW TAB ── */}
+          {/* â”€â”€ OVERVIEW TAB â”€â”€ */}
           {tab === 'overview' && (
             <div className="animate-fade-in space-y-3">
               {appointments.length === 0 && (
@@ -350,8 +327,7 @@ export default function PatientDashboard() {
               ))}
             </div>
           )}
-
-          {/* ── BOOK APPOINTMENT TAB ── */}
+          {/* â”€â”€ BOOK APPOINTMENT TAB â”€â”€ */}
           {tab === 'book' && (
             <div className="card p-6 max-w-2xl animate-fade-in">
               <h2 className="section-title flex items-center gap-2"><Plus size={16} /> Book an Appointment</h2>
@@ -362,7 +338,7 @@ export default function PatientDashboard() {
                     <option value="">Choose a doctor...</option>
                     {doctors.map((d) => (
                       <option key={d.id} value={d.id}>
-                        Dr. {d.firstName} {d.lastName} — {d.department ?? 'General'} {d.specialization ? `(${d.specialization})` : ''}
+                        Dr. {d.firstName} {d.lastName} â€” {d.department ?? 'General'} {d.specialization ? `(${d.specialization})` : ''}
                       </option>
                     ))}
                   </select>
@@ -402,13 +378,12 @@ export default function PatientDashboard() {
               </div>
             </div>
           )}
-
-          {/* ── BILLS TAB ── */}
+          {/* â”€â”€ BILLS TAB â”€â”€ */}
           {tab === 'bills' && (
             <div className="animate-fade-in">
               {totalDue > 0 && (
                 <div className="alert alert-warning mb-5">
-                  <IndianRupee size={16} /> You have <strong>₹{totalDue}</strong> in unpaid bills.
+                  <IndianRupee size={16} /> You have <strong>â‚¹{totalDue}</strong> in unpaid bills.
                 </div>
               )}
               <div className="card p-5">
@@ -426,7 +401,7 @@ export default function PatientDashboard() {
                         {invoices.map(inv => (
                           <tr key={inv.id}>
                             <td className="font-medium">INV-{inv.id}</td>
-                            <td className="font-semibold">₹{inv.amount}</td>
+                            <td className="font-semibold">â‚¹{inv.amount}</td>
                             <td><StatusChip status={inv.status} /></td>
                             <td>
                               {inv.status === 'UNPAID' && (
@@ -435,7 +410,7 @@ export default function PatientDashboard() {
                                 </button>
                               )}
                               {inv.status === 'PAID' && (
-                                <span className="text-xs font-medium" style={{ color: 'var(--color-success)' }}>✓ Paid</span>
+                                <span className="text-xs font-medium" style={{ color: 'var(--color-success)' }}>âœ“ Paid</span>
                               )}
                             </td>
                           </tr>
@@ -447,8 +422,7 @@ export default function PatientDashboard() {
               </div>
             </div>
           )}
-
-          {/* ── SYMPTOM CHECK TAB ── */}
+          {/* â”€â”€ SYMPTOM CHECK TAB â”€â”€ */}
           {tab === 'symptoms' && (
             <div className="card p-6 max-w-xl animate-fade-in">
               <h2 className="section-title flex items-center gap-2"><Brain size={16} /> AI Symptom Pre-Check</h2>
@@ -457,14 +431,13 @@ export default function PatientDashboard() {
               </p>
               <textarea
                 className="input-field min-h-[120px] resize-none mb-4"
-                placeholder="e.g. I have a severe headache, fever of 101°F, and body aches for the past 2 days..."
+                placeholder="e.g. I have a severe headache, fever of 101Â°F, and body aches for the past 2 days..."
                 value={symptoms}
                 onChange={(e) => setSymptoms(e.target.value)}
               />
               <button className="btn-primary w-full" onClick={checkSymptoms} disabled={checkingSymptoms}>
                 <Brain size={15} /> {checkingSymptoms ? 'Analyzing...' : 'Check My Symptoms'}
               </button>
-
               {symptomResult && (
                 <div className="mt-5 p-4 rounded-xl border" style={{ background: 'var(--color-primary-light)', borderColor: 'var(--color-primary)' }}>
                   <div className="flex items-start justify-between">

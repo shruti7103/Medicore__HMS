@@ -27,6 +27,7 @@ public class DataInitializer implements CommandLineRunner {
         seed("nurse@medicore.local", "Priya Sharma", Role.NURSE);
     }
 
+    @SuppressWarnings("null")
     private void seed(String email, String name, Role role) {
         userRepository.findByEmail(email).ifPresentOrElse(
                 user -> {

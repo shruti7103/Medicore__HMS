@@ -10,7 +10,6 @@ import PatientDashboard from './pages/dashboards/PatientDashboard';
 import PharmacistDashboard from './pages/dashboards/PharmacistDashboard';
 import NurseDashboard from './pages/dashboards/NurseDashboard';
 import TelemedicineRoom from './pages/dashboards/TelemedicineRoom';
-import MessagingCenter from './pages/dashboards/MessagingCenter';
 import { ROLE_ROUTES } from './types';
 
 function ProtectedRoute({ children, roles }: { children: React.ReactNode; roles?: string[] }) {
@@ -50,7 +49,6 @@ export default function App() {
       <Route path="/patient" element={<ProtectedRoute roles={['PATIENT']}><PatientDashboard /></ProtectedRoute>} />
       <Route path="/pharmacist" element={<ProtectedRoute roles={['PHARMACIST']}><PharmacistDashboard /></ProtectedRoute>} />
       <Route path="/telemedicine/:roomId" element={<ProtectedRoute roles={['DOCTOR', 'PATIENT']}><TelemedicineRoom /></ProtectedRoute>} />
-      <Route path="/messages" element={<ProtectedRoute><MessagingCenter /></ProtectedRoute>} />
 
       {/* Catch-all */}
       <Route path="*" element={<Navigate to="/" />} />

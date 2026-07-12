@@ -34,7 +34,7 @@ public class PatientService {
         return toDetailResponse(p);
     }
 
-    @Transactional public PatientResponse create(PatientRequest req) {
+    @SuppressWarnings("null") @Transactional public PatientResponse create(PatientRequest req) {
         Long userId = SecurityUtils.currentUserId();
         if (patientRepository.findByUserId(userId).isPresent())
             throw new BadRequestException("Patient profile already exists");
@@ -44,7 +44,7 @@ public class PatientService {
         return toResponse(patientRepository.save(p));
     }
 
-    @Transactional public PatientResponse update(Long id, PatientRequest req) {
+    @SuppressWarnings("null") @Transactional public PatientResponse update(Long id, PatientRequest req) {
         Patient p = getPatient(id);
         checkAccess(p);
         p.setFirstName(req.getFirstName()); p.setLastName(req.getLastName());
@@ -58,21 +58,21 @@ public class PatientService {
         patientRepository.delete(getPatient(id));
     }
 
-    @Transactional public MedicalHistoryResponse addHistory(Long id, MedicalHistoryRequest req) {
+    @SuppressWarnings("null") @Transactional public MedicalHistoryResponse addHistory(Long id, MedicalHistoryRequest req) {
         getPatient(id);
         MedicalHistory h = MedicalHistory.builder().patientId(id).doctorId(req.getDoctorId())
                 .visitDate(req.getVisitDate()).diagnosis(req.getDiagnosis()).notes(req.getNotes()).build();
         return toHistoryResponse(historyRepository.save(h));
     }
 
-    @Transactional public VitalsResponse addVitals(Long id, VitalsRequest req) {
+    @SuppressWarnings("null") @Transactional public VitalsResponse addVitals(Long id, VitalsRequest req) {
         getPatient(id);
         Vitals v = Vitals.builder().patientId(id).bpSystolic(req.getBpSystolic()).bpDiastolic(req.getBpDiastolic())
                 .pulse(req.getPulse()).temperatureC(req.getTemperatureC()).weightKg(req.getWeightKg()).build();
         return toVitalsResponse(vitalsRepository.save(v));
     }
 
-    @Transactional public AllergyResponse addAllergy(Long id, AllergyRequest req) {
+    @SuppressWarnings("null") @Transactional public AllergyResponse addAllergy(Long id, AllergyRequest req) {
         getPatient(id);
         Allergy a = Allergy.builder().patientId(id).allergen(req.getAllergen())
                 .severity(req.getSeverity() != null ? req.getSeverity() : Severity.MILD).notes(req.getNotes()).build();
@@ -81,6 +81,7 @@ public class PatientService {
 
     public long countPatients() { return patientRepository.count(); }
 
+    @SuppressWarnings("null")
     private Patient getPatient(Long id) {
         return patientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
     }

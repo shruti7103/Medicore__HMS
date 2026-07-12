@@ -35,6 +35,7 @@ public class NurseService {
     }
 
     @Transactional
+    @SuppressWarnings("null")
     public TaskResponse completeTask(Long id) {
         NursingTask t = taskRepository.findById(id).orElseThrow();
         t.setStatus(TaskStatus.DONE);
@@ -42,6 +43,7 @@ public class NurseService {
     }
 
     @Transactional
+    @SuppressWarnings("null")
     public void logMedication(MedLogRequest req) {
         medLogRepository.save(MedicationAdministration.builder()
                 .prescriptionItemId(req.getPrescriptionItemId())
@@ -60,6 +62,7 @@ public class NurseService {
     }
 
     @Transactional
+    @SuppressWarnings("null")
     public AssignmentResponse assignPatient(AssignmentRequest req) {
         PatientAssignment a = PatientAssignment.builder()
                 .nurseId(req.getNurseId())
@@ -72,6 +75,7 @@ public class NurseService {
     }
 
     @Transactional
+    @SuppressWarnings("null")
     public TaskResponse createTask(TaskRequest req) {
         NursingTask t = NursingTask.builder()
                 .patientId(req.getPatientId())
@@ -82,6 +86,28 @@ public class NurseService {
                 .dueAt(req.getDueAt())
                 .build();
         return toTask(taskRepository.save(t));
+    }
+
+    public NurseResponse getNurseProfile() {
+        return toNurseResponse(me());
+    }
+
+    @Transactional
+    @SuppressWarnings("null")
+    public NurseResponse createNurse(NurseRequest req) {
+        Long userId = SecurityUtils.currentUserId();
+        if (nurseRepository.findByUserId(userId).isPresent()) {
+            throw new com.medicore.common.exception.BadRequestException("Nurse profile already exists");
+        }
+        Nurse n = Nurse.builder()
+                .userId(userId)
+                .firstName(req.getFirstName())
+                .lastName(req.getLastName())
+                .department(req.getDepartment())
+                .shiftPattern(req.getShiftPattern() != null ? req.getShiftPattern() : "Day")
+                .isActive(true)
+                .build();
+        return toNurseResponse(nurseRepository.save(n));
     }
 
     private NurseResponse toNurseResponse(Nurse n) {

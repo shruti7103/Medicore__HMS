@@ -1,0 +1,267 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: hms-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "Cutie@75173"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      # Map SQL schemas to entrypoint directory for automatic initialization
+      - ./01_auth_db.sql:/docker-entrypoint-initdb.d/01_auth_db.sql
+      - ./02_patient_db.sql:/docker-entrypoint-initdb.d/02_patient_db.sql
+      - ./03_doctor_db.sql:/docker-entrypoint-initdb.d/03_doctor_db.sql
+      - ./04_appointment_db.sql:/docker-entrypoint-initdb.d/04_appointment_db.sql
+      - ./05_billing_db.sql:/docker-entrypoint-initdb.d/05_billing_db.sql
+      - ./06_pharmacy_db.sql:/docker-entrypoint-initdb.d/06_pharmacy_db.sql
+      - ./07_notification_db.sql:/docker-entrypoint-initdb.d/07_notification_db.sql
+      - ./08_nurse_db.sql:/docker-entrypoint-initdb.d/08_nurse_db.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pCutie@75173"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  eureka-server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: eureka-server/target/eureka-server-1.0.0.jar
+    container_name: hms-eureka
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: api-gateway/target/api-gateway-1.0.0.jar
+    container_name: hms-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+
+  auth-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: auth-service/target/auth-service-1.0.0.jar
+    container_name: hms-auth
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Cutie@75173
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  patient-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: patient-service/target/patient-service-1.0.0.jar
+    container_name: hms-patient
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Cutie@75173
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  doctor-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: doctor-service/target/doctor-service-1.0.0.jar
+    container_name: hms-doctor
+    ports:
+      - "8083:8083"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Cutie@75173
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  appointment-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: appointment-service/target/appointment-service-1.0.0.jar
+    container_name: hms-appointment
+    ports:
+      - "8084:8084"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Cutie@75173
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  billing-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: billing-service/target/billing-service-1.0.0.jar
+    container_name: hms-billing
+    ports:
+      - "8085:8085"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Cutie@75173
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  pharmacy-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: pharmacy-service/target/pharmacy-service-1.0.0.jar
+    container_name: hms-pharmacy
+    ports:
+      - "8086:8086"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Cutie@75173
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  notification-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: notification-service/target/notification-service-1.0.0.jar
+    container_name: hms-notification
+    ports:
+      - "8087:8087"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Cutie@75173
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  nurse-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: nurse-service/target/nurse-service-1.0.0.jar
+    container_name: hms-nurse
+    ports:
+      - "8088:8088"
+    environment:
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: Cutie@75173
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+
+  analytics-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: analytics-service/target/analytics-service-1.0.0.jar
+    container_name: hms-analytics
+    ports:
+      - "8089:8089"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka/
+      JWT_SECRET: medicore-super-secret-key-change-in-production-min-256-bits!!
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+
+  symptom-check-service:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        JAR_FILE: symptom-check-service/target/symptom-check-service-1.0.0.jar
+    container_name: hms-symptom-check
+    ports:
+      - "8090:8090"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka/
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+
+volumes:
+  mysql-data:

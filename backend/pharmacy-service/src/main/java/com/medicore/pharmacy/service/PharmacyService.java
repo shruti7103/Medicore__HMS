@@ -26,7 +26,7 @@ public class PharmacyService {
                 .map(this::toMedicine).collect(Collectors.toList());
     }
 
-    @Transactional public MedicineResponse addMedicine(MedicineRequest req) {
+    @SuppressWarnings("null") @Transactional public MedicineResponse addMedicine(MedicineRequest req) {
         Medicine m = Medicine.builder().name(req.getName()).description(req.getDescription())
                 .stockQty(req.getStockQty()).unitPrice(req.getUnitPrice())
                 .reorderLevel(req.getReorderLevel() != null ? req.getReorderLevel() : 10).build();
@@ -43,7 +43,7 @@ public class PharmacyService {
                 .stream().map(this::toPrescription).collect(Collectors.toList());
     }
 
-    @Transactional public PrescriptionResponse create(PrescriptionRequest req) {
+    @SuppressWarnings("null") @Transactional public PrescriptionResponse create(PrescriptionRequest req) {
         Prescription p = Prescription.builder().appointmentId(req.getAppointmentId())
                 .doctorId(req.getDoctorId()).patientId(req.getPatientId())
                 .status(PrescriptionStatus.PENDING).build();
@@ -56,7 +56,7 @@ public class PharmacyService {
         return toPrescription(prescriptionRepository.save(p));
     }
 
-    @Transactional public PrescriptionResponse dispense(Long id) {
+    @SuppressWarnings("null") @Transactional public PrescriptionResponse dispense(Long id) {
         Prescription p = prescriptionRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Prescription not found"));
         if (p.getStatus() != PrescriptionStatus.PENDING) throw new BadRequestException("Already dispensed or cancelled");

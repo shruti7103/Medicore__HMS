@@ -7,6 +7,7 @@ import java.math.BigDecimal; import java.util.Map;
 public class InternalStatsController {
  private final InvoiceRepository invoiceRepository; private final PaymentRepository paymentRepository;
  @GetMapping("/stats") public ApiResponse<Map<String,Long>> stats(){ return ApiResponse.ok(Map.of("count",invoiceRepository.count())); }
+ @SuppressWarnings("null")
  @GetMapping("/stats/revenue") public ApiResponse<Map<String,Long>> revenue(){
   BigDecimal sum=paymentRepository.findAll().stream().map(p->p.getAmount()).reduce(BigDecimal.ZERO,BigDecimal::add);
   return ApiResponse.ok(Map.of("count",sum.longValue())); }}

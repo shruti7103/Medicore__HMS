@@ -11,6 +11,7 @@ public class Invoice {
     @Column(name="appointment_id",nullable=false) private Long appointmentId;
     @Column(name="patient_id",nullable=false) private Long patientId;
     @Column(nullable=false) private BigDecimal amount;
+    @Builder.Default
     @Enumerated(EnumType.STRING) @Column(nullable=false) private InvoiceStatus status=InvoiceStatus.UNPAID;
     @Column(name="issued_at",insertable=false,updatable=false) private LocalDateTime issuedAt;
     @Column(name="due_date") private LocalDate dueDate;

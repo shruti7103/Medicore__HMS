@@ -17,12 +17,15 @@ export default function NotificationBell() {
   useEffect(() => { 
     load(); 
     if (user) {
-        wsService.subscribe(`/topic/user/${user.id}`, (msg) => {
+        const handleNotif = (msg: any) => {
             setItems(prev => [msg, ...prev]);
             setCount(c => c + 1);
-        });
+        };
+        wsService.subscribe(`/topic/user/${user.id}`, handleNotif);
+        return () => {
+            wsService.unsubscribe(`/topic/user/${user.id}`, handleNotif);
+        };
     }
-    // const t = setInterval(load, 15000); return () => clearInterval(t); 
   }, [user]);
   return (
     <div className="relative">

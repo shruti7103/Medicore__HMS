@@ -5,7 +5,7 @@ import { ROLE_ROUTES } from '../types';
 import {
   Activity, Calendar, Users, Pill, ShieldCheck, Heart, Stethoscope, Bell,
   ChevronRight, Star, CheckCircle2, Zap, Globe, Lock, BarChart3, Clock,
-  Video, MessageSquare, ArrowRight, Moon, Sun,
+  Video, ArrowRight, Moon, Sun,
   Building2, TrendingUp, Award, Layers
 } from 'lucide-react';
 
@@ -17,7 +17,7 @@ const FEATURES = [
   { icon: <Heart className="w-7 h-7"/>, title: 'Nursing Station', desc: 'Task management, vitals recording, medication administration records (MAR), and patient assignments.', color: '#ef4444', bg: 'rgba(239,68,68,0.1)' },
   { icon: <BarChart3 className="w-7 h-7"/>, title: 'Analytics & Reports', desc: 'Real-time hospital analytics, revenue reports, appointment statistics, and operational insights.', color: '#06b6d4', bg: 'rgba(6,182,212,0.1)' },
   { icon: <Video className="w-7 h-7"/>, title: 'Telemedicine', desc: 'Integrated video consultation rooms for remote patient care and follow-up appointments.', color: '#8b5cf6', bg: 'rgba(139,92,246,0.1)' },
-  { icon: <MessageSquare className="w-7 h-7"/>, title: 'Secure Messaging', desc: 'HIPAA-compliant real-time messaging between staff members with WebSocket technology.', color: '#10b981', bg: 'rgba(16,185,129,0.1)' },
+
   { icon: <ShieldCheck className="w-7 h-7"/>, title: 'Role-Based Access', desc: 'Granular permission matrix with Admin, Doctor, Nurse, Receptionist, Pharmacist and Patient roles.', color: '#0ea5e9', bg: 'rgba(14,165,233,0.1)' },
 ];
 

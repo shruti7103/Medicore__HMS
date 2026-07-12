@@ -50,7 +50,12 @@ $services = @(
 )
 
 Start-ServiceJar $services[0].Name $services[0].Port $services[0].Jar
-Start-Sleep -Seconds 15
+Write-Host "Waiting for Eureka (port 8761) to start..." -ForegroundColor Cyan
+while (-not (netstat -ano | Select-String ":8761\s.*LISTENING")) {
+    Start-Sleep -Seconds 2
+}
+Write-Host "Eureka is active. Starting other services..." -ForegroundColor Green
+Start-Sleep -Seconds 5
 
 foreach ($svc in $services[1..($services.Length - 1)]) {
     Start-ServiceJar $svc.Name $svc.Port $svc.Jar
@@ -67,3 +72,8 @@ Write-Host 'PowerShell commands (use .\ prefix):'
 Write-Host '  .\setup-database.ps1'
 Write-Host '  .\start-backend.ps1'
 Write-Host '  .\run.ps1'
+Write-Host ''
+Write-Host 'Keeping backend runner alive. Press Ctrl+C to stop.'
+while ($true) {
+    Start-Sleep -Seconds 10
+}

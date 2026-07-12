@@ -63,4 +63,16 @@ public class NurseController {
         nurseService.logMedication(req);
         return ApiResponse.ok("Medication logged", null);
     }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('NURSE')")
+    public ApiResponse<NurseResponse> me() {
+        return ApiResponse.ok(nurseService.getNurseProfile());
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('NURSE')")
+    public ApiResponse<NurseResponse> createNurse(@Valid @RequestBody NurseRequest req) {
+        return ApiResponse.ok(nurseService.createNurse(req));
+    }
 }

@@ -8,6 +8,7 @@ public class Nurse {
  @Column(name="last_name",nullable=false) private String lastName;
  @Column(nullable=false) private String department;
  @Column(name="shift_pattern") private String shiftPattern;
+ @Builder.Default
  @Column(name="is_active",nullable=false) private Boolean isActive=true;
  @Column(name="created_at",insertable=false,updatable=false) private LocalDateTime createdAt;
 }

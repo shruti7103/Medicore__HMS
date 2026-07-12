@@ -20,6 +20,7 @@ public class DoctorDataInitializer implements CommandLineRunner {
     private final AvailabilitySlotRepository slotRepository;
 
     @Override
+    @SuppressWarnings("null")
     public void run(String... args) {
         if (doctorRepository.count() > 0) return;
 

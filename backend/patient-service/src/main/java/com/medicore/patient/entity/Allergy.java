@@ -6,6 +6,7 @@ public class Allergy {
     @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
     @Column(name="patient_id",nullable=false) private Long patientId;
     @Column(nullable=false,length=120) private String allergen;
+    @Builder.Default
     @Enumerated(EnumType.STRING) @Column(nullable=false) private Severity severity=Severity.MILD;
     private String notes;
 }

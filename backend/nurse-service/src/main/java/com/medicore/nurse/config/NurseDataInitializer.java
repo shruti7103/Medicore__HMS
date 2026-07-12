@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor; import org.springframework.boot.CommandLi
 @Component @RequiredArgsConstructor
 public class NurseDataInitializer implements CommandLineRunner {
  private final NurseRepository nurseRepository; private final NursingTaskRepository taskRepository;
- @Override public void run(String... args) {
+ @Override @SuppressWarnings("null") public void run(String... args) {
   if(nurseRepository.count()>0) return;
   Nurse n=nurseRepository.save(Nurse.builder().userId(6L).firstName("Priya").lastName("Sharma").department("General").shiftPattern("Day").isActive(true).build());
   taskRepository.save(NursingTask.builder().patientId(1L).assignedNurseId(n.getId()).createdBy(2L).title("Check vitals - Room 4B").status(TaskStatus.TODO).build());

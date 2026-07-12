@@ -37,17 +37,15 @@ export default function PharmacistDashboard() {
 
   useEffect(() => {
     load();
-    const token = localStorage.getItem('token');
-    if (token) {
-      wsService.connect(token, () => {
-        wsService.subscribe('/topic/prescriptions', () => {
-          setLiveCount(c => c + 1);
-          showToast('New prescription received!', 'info');
-          load();
-        });
-      }, () => {});
-    }
-    return () => wsService.disconnect();
+    const handleNewPrescription = () => {
+      setLiveCount(c => c + 1);
+      showToast('New prescription received!', 'info');
+      load();
+    };
+    wsService.subscribe('/topic/prescriptions', handleNewPrescription);
+    return () => {
+      wsService.unsubscribe('/topic/prescriptions', handleNewPrescription);
+    };
   }, [load]);
 
   const dispense = async (id: number) => {

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -35,7 +36,7 @@ public class AuthSecurityConfig {
         return http.build();
     }
     private class JwtAuthFilter extends OncePerRequestFilter {
-        @Override protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws ServletException, IOException {
+        @Override protected void doFilterInternal(@NonNull HttpServletRequest req, @NonNull HttpServletResponse res, @NonNull FilterChain chain) throws ServletException, IOException {
             String auth = req.getHeader(HttpHeaders.AUTHORIZATION);
             if (auth != null && auth.startsWith("Bearer ") && jwtUtil.isValid(auth.substring(7))) {
                 var claims = jwtUtil.parseClaims(auth.substring(7));

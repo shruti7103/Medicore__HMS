@@ -1,19 +1,19 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatusChip from '../../components/StatusChip';
 import StatCard from '../../components/StatCard';
 import EmptyState from '../../components/EmptyState';
 import { api, unwrap } from '../../lib/api';
+import { useAuth } from '../../context/AuthContext';
 import type { NursingTask } from '../../types';
 import {
   Heart, ClipboardList, Activity, CheckCircle2, Thermometer,
   Pill, User, Clock, AlertTriangle, RefreshCw, Plus, X
 } from 'lucide-react';
-
 interface Assignment { id: number; patientId: number; status: string; notes?: string; }
 interface VitalsForm { bpSystolic: string; bpDiastolic: string; pulse: string; temperatureC: string; weightKg: string; spO2: string; }
-
 export default function NurseDashboard() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<NursingTask[]>([]);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [activeTab, setActiveTab] = useState<'overview' | 'vitals' | 'mar' | 'tasks'>('overview');
@@ -22,23 +22,68 @@ export default function NurseDashboard() {
   const [medLog, setMedLog] = useState({ prescriptionItemId: '', notes: '' });
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null);
   const [saving, setSaving] = useState(false);
-
+  // Nurse onboarding states
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [showProfileForm, setShowProfileForm] = useState(false);
+  const [creatingProfile, setCreatingProfile] = useState(false);
+  const [profileForm, setProfileForm] = useState({
+    firstName: user?.name?.split(' ')[0] ?? '',
+    lastName: user?.name?.split(' ').slice(1).join(' ') ?? '',
+    department: 'General',
+    shiftPattern: 'Day'
+  });
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type }); setTimeout(() => setToast(null), 3500);
   };
-
   const load = useCallback(() => {
-    api.get('/nurse/tasks').then((r) => setTasks(unwrap(r))).catch(() => setTasks([]));
-    api.get('/nurse/assignments').then((r) => setAssignments(unwrap(r))).catch(() => setAssignments([]));
+    setProfileLoading(true);
+    api.get('/nurse/me')
+      .then((r) => {
+        const data = r.data?.data ?? r.data;
+        if (data && data.id) {
+          setShowProfileForm(false);
+          // Load assignments and tasks once profile exists
+          api.get('/nurse/tasks').then((r) => setTasks(unwrap(r))).catch(() => setTasks([]));
+          api.get('/nurse/assignments').then((r) => setAssignments(unwrap(r))).catch(() => setAssignments([]));
+        } else {
+          setShowProfileForm(true);
+        }
+      })
+      .catch((err) => {
+        const status = err?.response?.status;
+        if (status === 404 || status === 400) {
+          setShowProfileForm(true);
+        }
+      })
+      .finally(() => {
+        setProfileLoading(false);
+      });
   }, []);
-
   useEffect(() => { load(); }, [load]);
-
+  const createProfile = async () => {
+    if (!profileForm.firstName.trim() || !profileForm.lastName.trim() || !profileForm.department.trim()) {
+      return showToast('First Name, Last Name and Department are required', 'error');
+    }
+    setCreatingProfile(true);
+    try {
+      await api.post('/nurse', {
+        firstName: profileForm.firstName.trim(),
+        lastName: profileForm.lastName.trim(),
+        department: profileForm.department.trim(),
+        shiftPattern: profileForm.shiftPattern
+      });
+      showToast('Nurse profile completed!');
+      load();
+    } catch (err: any) {
+      showToast(err?.response?.data?.message ?? 'Failed to create profile', 'error');
+    } finally {
+      setCreatingProfile(false);
+    }
+  };
   const complete = async (id: number) => {
     try { await api.patch(`/nurse/tasks/${id}/complete`); load(); showToast('Task completed'); }
     catch { showToast('Failed to complete task', 'error'); }
   };
-
   const recordVitals = async () => {
     if (!patientId) return showToast('Enter patient ID', 'error');
     setSaving(true);
@@ -56,7 +101,6 @@ export default function NurseDashboard() {
     } catch { showToast('Failed to record vitals', 'error'); }
     finally { setSaving(false); }
   };
-
   const logMedication = async () => {
     if (!patientId || !medLog.prescriptionItemId) return showToast('Fill all required fields', 'error');
     setSaving(true);
@@ -71,25 +115,21 @@ export default function NurseDashboard() {
     } catch { showToast('Failed to log medication', 'error'); }
     finally { setSaving(false); }
   };
-
   const openTasks = tasks.filter(t => t.status !== 'DONE');
   const doneTasks = tasks.filter(t => t.status === 'DONE');
-
   const VITALS_FIELDS: { key: keyof VitalsForm; label: string; unit: string; placeholder: string }[] = [
     { key: 'bpSystolic', label: 'BP Systolic', unit: 'mmHg', placeholder: '120' },
     { key: 'bpDiastolic', label: 'BP Diastolic', unit: 'mmHg', placeholder: '80' },
     { key: 'pulse', label: 'Pulse Rate', unit: 'bpm', placeholder: '72' },
-    { key: 'temperatureC', label: 'Temperature', unit: '°C', placeholder: '37.0' },
+    { key: 'temperatureC', label: 'Temperature', unit: 'Â°C', placeholder: '37.0' },
     { key: 'weightKg', label: 'Weight', unit: 'kg', placeholder: '65' },
-    { key: 'spO2', label: 'SpO₂', unit: '%', placeholder: '98' },
+    { key: 'spO2', label: 'SpOâ‚‚', unit: '%', placeholder: '98' },
   ];
-
   return (
     <DashboardLayout
       title="Nurse"
       links={[
         { to: '/nurse', label: 'Ward' },
-        { to: '/messages', label: 'Messages' },
       ]}
       actions={<button className="btn-secondary text-xs" onClick={load}><RefreshCw size={13}/></button>}
     >
@@ -98,14 +138,69 @@ export default function NurseDashboard() {
           {toast.type === 'success' ? <CheckCircle2 size={16}/> : <AlertTriangle size={16}/>} {toast.msg}
         </div>
       )}
-
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="page-title gradient-text">Nursing Station</h1>
-          <p className="page-subtitle">Patient care, vitals monitoring & task management</p>
+      {profileLoading && (
+        <div className="flex items-center justify-center py-12">
+          <RefreshCw className="animate-spin text-teal-600 mr-2" size={20} />
+          <p className="text-sm" style={{ color: 'var(--color-muted)' }}>Loading your profile...</p>
         </div>
-      </div>
-
+      )}
+      {!profileLoading && showProfileForm && (
+        <div className="card p-6 max-w-2xl mx-auto border-2 animate-fade-in" style={{ borderColor: 'var(--color-primary)', background: 'var(--color-primary-light)' }}>
+          <div className="flex items-start gap-4">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: 'var(--color-primary)', color: 'white' }}>
+              <User size={22} />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-lg mb-1">Complete Your Nurse Profile</h3>
+              <p className="text-sm mb-4" style={{ color: 'var(--color-muted)' }}>
+                Set up your clinical department and shift pattern to unlock the nursing station workspace.
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2 mb-4">
+                <div>
+                  <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-muted)' }}>FIRST NAME *</label>
+                  <input className="input-field" placeholder="First name"
+                    value={profileForm.firstName} onChange={e => setProfileForm(f => ({ ...f, firstName: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-muted)' }}>LAST NAME *</label>
+                  <input className="input-field" placeholder="Last name"
+                    value={profileForm.lastName} onChange={e => setProfileForm(f => ({ ...f, lastName: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-muted)' }}>DEPARTMENT *</label>
+                  <select className="input-field" value={profileForm.department} onChange={e => setProfileForm(f => ({ ...f, department: e.target.value }))}>
+                    <option value="General">General</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Pediatrics">Pediatrics</option>
+                    <option value="Orthopedics">Orthopedics</option>
+                    <option value="Neurology">Neurology</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold mb-1 block" style={{ color: 'var(--color-muted)' }}>SHIFT PATTERN *</label>
+                  <select className="input-field" value={profileForm.shiftPattern} onChange={e => setProfileForm(f => ({ ...f, shiftPattern: e.target.value }))}>
+                    <option value="Day">Day</option>
+                    <option value="Night">Night</option>
+                    <option value="Rotational">Rotational</option>
+                  </select>
+                </div>
+              </div>
+              <button className="btn-primary" onClick={createProfile} disabled={creatingProfile}>
+                {creatingProfile ? 'Saving...' : 'Complete Profile'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {!profileLoading && !showProfileForm && (
+        <>
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <h1 className="page-title gradient-text">Nursing Station</h1>
+              <p className="page-subtitle">Patient care, vitals monitoring & task management</p>
+            </div>
+          </div>
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-4 mb-8 stagger-children">
         <StatCard label="Assigned Patients" value={assignments.length} icon={<User size={22}/>} accent="teal" />
@@ -113,7 +208,6 @@ export default function NurseDashboard() {
         <StatCard label="Completed Today" value={doneTasks.length} icon={<CheckCircle2 size={22}/>} accent="green" />
         <StatCard label="Urgent Tasks" value={openTasks.filter(t=>t.status==='IN_PROGRESS').length} icon={<AlertTriangle size={22}/>} accent="red" />
       </div>
-
       {/* Tabs */}
       <div className="tabs mb-6">
         {([['overview','Overview',<Heart size={14}/>],['vitals','Record Vitals',<Thermometer size={14}/>],['mar','Medication (MAR)',<Pill size={14}/>],['tasks','Task Board',<ClipboardList size={14}/>]] as const).map(([key,label,icon])=>(
@@ -122,7 +216,6 @@ export default function NurseDashboard() {
           </button>
         ))}
       </div>
-
       {/* OVERVIEW TAB */}
       {activeTab === 'overview' && (
         <div className="grid gap-6 lg:grid-cols-2 animate-fade-in">
@@ -141,7 +234,6 @@ export default function NurseDashboard() {
               </div>
             ))}
           </div>
-
           <div className="card p-5">
             <h2 className="section-title flex items-center gap-2"><Activity size={16}/> Quick Overview</h2>
             <div className="space-y-3">
@@ -166,7 +258,6 @@ export default function NurseDashboard() {
           </div>
         </div>
       )}
-
       {/* VITALS TAB */}
       {activeTab === 'vitals' && (
         <div className="card p-6 max-w-2xl animate-fade-in">
@@ -196,7 +287,6 @@ export default function NurseDashboard() {
           </button>
         </div>
       )}
-
       {/* MAR TAB */}
       {activeTab === 'mar' && (
         <div className="card p-6 max-w-xl animate-fade-in">
@@ -220,7 +310,6 @@ export default function NurseDashboard() {
           </div>
         </div>
       )}
-
       {/* TASKS TAB */}
       {activeTab === 'tasks' && (
         <div className="animate-fade-in">
@@ -234,7 +323,7 @@ export default function NurseDashboard() {
                       <div className="w-2 h-2 rounded-full" style={{ background: t.status === 'IN_PROGRESS' ? 'var(--color-warning)' : 'var(--color-muted)' }} />
                       <div>
                         <p className="font-medium text-sm">{t.title}</p>
-                        <p className="text-xs" style={{ color: 'var(--color-muted)' }}>Patient #{t.patientId} {t.dueAt && `· Due: ${new Date(t.dueAt).toLocaleTimeString()}`}</p>
+                        <p className="text-xs" style={{ color: 'var(--color-muted)' }}>Patient #{t.patientId} {t.dueAt && `Â· Due: ${new Date(t.dueAt).toLocaleTimeString()}`}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -264,6 +353,8 @@ export default function NurseDashboard() {
           )}
           {tasks.length === 0 && <EmptyState message="No tasks assigned" />}
         </div>
+      )}
+        </>
       )}
     </DashboardLayout>
   );

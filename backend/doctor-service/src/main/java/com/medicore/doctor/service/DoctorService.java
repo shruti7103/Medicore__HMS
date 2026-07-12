@@ -2,7 +2,6 @@ package com.medicore.doctor.service;
 
 import com.medicore.common.exception.BadRequestException;
 import com.medicore.common.exception.ResourceNotFoundException;
-import com.medicore.common.model.Role;
 import com.medicore.common.security.SecurityUtils;
 import com.medicore.doctor.dto.DoctorDtos.*;
 import com.medicore.doctor.entity.*;
@@ -33,7 +32,7 @@ public class DoctorService {
                 .orElseThrow(() -> new ResourceNotFoundException("Doctor profile not found"));
     }
 
-    @Transactional public DoctorResponse create(DoctorRequest req) {
+    @SuppressWarnings("null") @Transactional public DoctorResponse create(DoctorRequest req) {
         Long userId = SecurityUtils.currentUserId();
         if (doctorRepository.findByUserId(userId).isPresent())
             throw new BadRequestException("Doctor profile already exists");
@@ -45,7 +44,7 @@ public class DoctorService {
         return toResponse(doctorRepository.save(d));
     }
 
-    @Transactional public DoctorResponse update(Long id, DoctorRequest req) {
+    @SuppressWarnings("null") @Transactional public DoctorResponse update(Long id, DoctorRequest req) {
         Doctor d = getDoctor(id);
         d.setFirstName(req.getFirstName()); d.setLastName(req.getLastName());
         d.setSpecialization(req.getSpecialization()); d.setDepartment(req.getDepartment());
@@ -55,7 +54,7 @@ public class DoctorService {
         return toResponse(doctorRepository.save(d));
     }
 
-    @Transactional public SlotResponse addSlot(Long doctorId, SlotRequest req) {
+    @SuppressWarnings("null") @Transactional public SlotResponse addSlot(Long doctorId, SlotRequest req) {
         getDoctor(doctorId);
         AvailabilitySlot slot = AvailabilitySlot.builder().doctorId(doctorId).dayOfWeek(req.getDayOfWeek())
                 .startTime(req.getStartTime()).endTime(req.getEndTime())
@@ -90,6 +89,7 @@ public class DoctorService {
 
     public long countActiveDoctors() { return doctorRepository.countByIsActiveTrue(); }
 
+    @SuppressWarnings("null")
     private Doctor getDoctor(Long id) {
         return doctorRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Doctor not found"));
     }

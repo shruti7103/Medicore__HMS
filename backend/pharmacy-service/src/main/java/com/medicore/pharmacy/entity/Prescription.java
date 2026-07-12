@@ -11,6 +11,7 @@ public class Prescription {
     @Column(name="appointment_id",nullable=false) private Long appointmentId;
     @Column(name="doctor_id",nullable=false) private Long doctorId;
     @Column(name="patient_id",nullable=false) private Long patientId;
+    @Builder.Default
     @Enumerated(EnumType.STRING) @Column(nullable=false) private PrescriptionStatus status=PrescriptionStatus.PENDING;
     @Column(name="created_at",insertable=false,updatable=false) private LocalDateTime createdAt;
     @OneToMany(mappedBy="prescription", cascade=CascadeType.ALL, orphanRemoval=true)

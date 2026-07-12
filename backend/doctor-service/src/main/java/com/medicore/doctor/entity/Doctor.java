@@ -12,9 +12,12 @@ public class Doctor {
     @Column(name="last_name",nullable=false,length=80) private String lastName;
     @Column(nullable=false,length=120) private String specialization;
     @Column(nullable=false,length=120) private String department;
+    @Builder.Default
     @Column(name="experience_years",nullable=false) private Integer experienceYears=0;
+    @Builder.Default
     @Column(name="consultation_fee",nullable=false) private BigDecimal consultationFee=BigDecimal.ZERO;
     private String bio;
+    @Builder.Default
     @Column(name="is_active",nullable=false) private Boolean isActive=true;
     @Column(name="created_at",insertable=false,updatable=false) private LocalDateTime createdAt;
 }

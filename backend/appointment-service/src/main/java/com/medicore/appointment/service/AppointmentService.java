@@ -2,8 +2,6 @@ package com.medicore.appointment.service;
 
 import com.medicore.common.exception.BadRequestException;
 import com.medicore.common.exception.ResourceNotFoundException;
-import com.medicore.common.model.Role;
-import com.medicore.common.security.SecurityUtils;
 import com.medicore.appointment.dto.AppointmentDtos.*;
 import com.medicore.appointment.entity.*;
 import com.medicore.appointment.repository.AppointmentRepository;
@@ -33,7 +31,7 @@ public class AppointmentService {
         return appointmentRepository.findByDoctorIdOrderBySlotStartDesc(doctorId).stream().map(this::toResponse).collect(Collectors.toList());
     }
 
-    @Transactional public AppointmentResponse book(BookRequest req) {
+    @SuppressWarnings("null") @Transactional public AppointmentResponse book(BookRequest req) {
         if (appointmentRepository.findByDoctorIdAndSlotStart(req.getDoctorId(), req.getSlotStart()).isPresent())
             throw new BadRequestException("Slot already booked");
             
@@ -49,13 +47,13 @@ public class AppointmentService {
         return toResponse(appointmentRepository.save(a));
     }
 
-    @Transactional public AppointmentResponse updateStatus(Long id, StatusRequest req) {
+    @SuppressWarnings("null") @Transactional public AppointmentResponse updateStatus(Long id, StatusRequest req) {
         Appointment a = get(id);
         a.setStatus(req.getStatus());
         return toResponse(appointmentRepository.save(a));
     }
 
-    @Transactional public AppointmentResponse reschedule(Long id, BookRequest req) {
+    @SuppressWarnings("null") @Transactional public AppointmentResponse reschedule(Long id, BookRequest req) {
         Appointment a = get(id);
         if (appointmentRepository.findByDoctorIdAndSlotStart(req.getDoctorId(), req.getSlotStart())
                 .filter(existing -> !existing.getId().equals(id)).isPresent())
@@ -67,6 +65,7 @@ public class AppointmentService {
 
     public long countAll() { return appointmentRepository.count(); }
 
+    @SuppressWarnings("null")
     private Appointment get(Long id) {
         return appointmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Appointment not found"));
     }

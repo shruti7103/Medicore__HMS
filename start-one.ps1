@@ -27,4 +27,4 @@ $jar = Join-Path $Root "backend\$($map[$key].Jar)"
 $log = Join-Path $logDir "$key.log"
 $env:DB_PASSWORD = $DbPassword
 Write-Host "Starting $key -> $log"
-Start-Process -FilePath 'java' -ArgumentList '-jar', $jar -WorkingDirectory (Split-Path $jar) -RedirectStandardOutput $log -RedirectStandardError $log -WindowStyle Hidden
+Start-Process -FilePath 'java' -ArgumentList '-jar', $jar -WorkingDirectory (Split-Path $jar) -RedirectStandardOutput $log -RedirectStandardError "$log.err" -WindowStyle Hidden

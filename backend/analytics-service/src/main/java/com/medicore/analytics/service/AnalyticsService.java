@@ -7,6 +7,7 @@ import java.math.BigDecimal; import java.util.*;
 @Service @RequiredArgsConstructor
 public class AnalyticsService {
  private final RestTemplate restTemplate;
+ @SuppressWarnings("null")
  private long count(String url) {
   try { Map<?,?> r=restTemplate.getForObject(url, Map.class); if(r!=null && r.get("data") instanceof Map<?,?> d) return ((Number)d.get("count")).longValue(); } catch(Exception ignored) {}
   return 0;

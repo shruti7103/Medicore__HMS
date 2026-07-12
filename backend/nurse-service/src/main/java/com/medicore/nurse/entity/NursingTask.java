@@ -7,6 +7,7 @@ public class NursingTask {
  @Column(name="assigned_nurse_id",nullable=false) private Long assignedNurseId;
  @Column(name="created_by",nullable=false) private Long createdBy;
  @Column(nullable=false) private String title;
+ @Builder.Default
  @Enumerated(EnumType.STRING) @Column(nullable=false) private TaskStatus status=TaskStatus.TODO;
  @Column(name="due_at") private LocalDateTime dueAt;
  @Column(name="created_at",insertable=false,updatable=false) private LocalDateTime createdAt;

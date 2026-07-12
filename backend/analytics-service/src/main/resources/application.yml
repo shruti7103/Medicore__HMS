@@ -6,6 +6,6 @@ spring:
 eureka:
  client:
   service-url:
-   defaultZone: http://localhost:8761/eureka/
+   defaultZone: ${EUREKA_URL:http://localhost:8761/eureka/}
 jwt:
- secret: medicore-super-secret-key-change-in-production-min-256-bits!!
+  secret: ${JWT_SECRET:medicore-super-secret-key-change-in-production-min-256-bits!!}

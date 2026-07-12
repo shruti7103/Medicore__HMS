@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 @Component @RequiredArgsConstructor
 public class PharmacyDataInitializer implements CommandLineRunner {
     private final MedicineRepository medicineRepository;
-    @Override public void run(String... args) {
+    @Override @SuppressWarnings("null") public void run(String... args) {
         if (medicineRepository.count() == 0) {
             medicineRepository.save(Medicine.builder().name("Paracetamol 500mg").description("Pain reliever").stockQty(200).unitPrice(new BigDecimal("5.00")).reorderLevel(20).build());
             medicineRepository.save(Medicine.builder().name("Amoxicillin 250mg").description("Antibiotic").stockQty(150).unitPrice(new BigDecimal("12.50")).reorderLevel(15).build());

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+﻿import { useCallback, useEffect, useState } from 'react';
 import DashboardLayout from '../../components/DashboardLayout';
 import StatCard from '../../components/StatCard';
 import StatusChip from '../../components/StatusChip';
@@ -10,14 +10,11 @@ import {
   Search, Building2, Activity, Shield, Trash2, Edit3, RefreshCw,
   CheckCircle2, XCircle, BarChart3, UserCheck, UserX
 } from 'lucide-react';
-
 const ROLES: Role[] = ['ADMIN', 'DOCTOR', 'NURSE', 'RECEPTIONIST', 'PATIENT', 'PHARMACIST'];
-
 const ROLE_COLORS: Record<string, string> = {
   ADMIN: 'badge-purple', DOCTOR: 'badge-primary', NURSE: 'badge-success',
   RECEPTIONIST: 'badge-danger', PATIENT: 'badge-info', PHARMACIST: 'badge-warning',
 };
-
 export default function AdminDashboard() {
   const [stats, setStats] = useState<AnalyticsSummary | null>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -31,24 +28,19 @@ export default function AdminDashboard() {
   const [newDept, setNewDept] = useState('');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState('');
-
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3500); };
-
   const load = useCallback(() => {
     api.get('/analytics/summary').then((r) => setStats(unwrap(r))).catch(() => {});
     api.get('/auth/users').then((r) => setUsers(unwrap(r))).catch(() => {});
     api.get('/auth/audit-logs').then((r) => setAuditLogs(unwrap(r))).catch(() => {});
     api.get('/doctors/departments').then((r) => setDepartments(unwrap(r) || [])).catch(() => {});
   }, []);
-
   useEffect(() => { load(); }, [load]);
-
   const filtered = users.filter((u) => {
     const matchSearch = `${u.name} ${u.email}`.toLowerCase().includes(search.toLowerCase());
     const matchRole = !roleFilter || u.role === roleFilter;
     return matchSearch && matchRole;
   });
-
   const createUser = async () => {
     if (!form.name || !form.email || !form.password) return showToast('Fill all fields');
     setLoading(true);
@@ -62,7 +54,6 @@ export default function AdminDashboard() {
       showToast(e?.response?.data?.message ?? 'Failed to create user');
     } finally { setLoading(false); }
   };
-
   const toggleStatus = async (u: User) => {
     if (!confirm(`${u.isActive === false ? 'Activate' : 'Deactivate'} ${u.name}?`)) return;
     try {
@@ -70,7 +61,6 @@ export default function AdminDashboard() {
       load(); showToast('Status updated');
     } catch { showToast('Action failed'); }
   };
-
   const changeRole = async (u: User) => {
     const role = prompt('New role (ADMIN, DOCTOR, NURSE, RECEPTIONIST, PATIENT, PHARMACIST):', u.role);
     if (!role || !ROLES.includes(role as Role)) return;
@@ -80,7 +70,6 @@ export default function AdminDashboard() {
       load(); showToast(`Role changed to ${role}`);
     } catch { showToast('Role change failed'); }
   };
-
   const resetPassword = async (u: User) => {
     if (!confirm(`Reset password for ${u.name}? They will use Reset@123`)) return;
     try {
@@ -88,7 +77,6 @@ export default function AdminDashboard() {
       showToast('Password reset to Reset@123');
     } catch { showToast('Reset failed'); }
   };
-
   const addDepartment = async () => {
     if (!newDept.trim()) return;
     try {
@@ -96,7 +84,6 @@ export default function AdminDashboard() {
       setNewDept(''); load(); showToast('Department added');
     } catch { showToast('Failed to add department'); }
   };
-
   const removeDepartment = async (d: any) => {
     if (!confirm(`Remove department ${d.name}?`)) return;
     try {
@@ -104,13 +91,11 @@ export default function AdminDashboard() {
       load(); showToast('Department removed');
     } catch { showToast('Failed to remove department'); }
   };
-
   return (
     <DashboardLayout
       title="Admin"
       links={[
         { to: '/admin', label: 'Overview' },
-        { to: '/messages', label: 'Messages' },
       ]}
     >
       {/* Toast */}
@@ -119,7 +104,6 @@ export default function AdminDashboard() {
           <CheckCircle2 size={16} /> {toast}
         </div>
       )}
-
       {/* Page Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
@@ -130,21 +114,19 @@ export default function AdminDashboard() {
           <Plus size={16} /> Create User
         </button>
       </div>
-
       {/* Stats Grid */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5 mb-8 stagger-children">
-        <StatCard label="Total Patients" value={stats?.totalPatients ?? '—'} accent="teal"
+        <StatCard label="Total Patients" value={stats?.totalPatients ?? 'â€”'} accent="teal"
           icon={<Users size={22} />} trend={{ value: 8, label: 'this month' }} />
-        <StatCard label="Doctors" value={stats?.totalDoctors ?? '—'} accent="indigo"
+        <StatCard label="Doctors" value={stats?.totalDoctors ?? 'â€”'} accent="indigo"
           icon={<Stethoscope size={22} />} />
-        <StatCard label="Nurses" value={stats?.totalNurses ?? '—'} accent="green"
+        <StatCard label="Nurses" value={stats?.totalNurses ?? 'â€”'} accent="green"
           icon={<Heart size={22} />} />
-        <StatCard label="Appointments" value={stats?.totalAppointments ?? '—'} accent="amber"
+        <StatCard label="Appointments" value={stats?.totalAppointments ?? 'â€”'} accent="amber"
           icon={<Calendar size={22} />} trend={{ value: 12, label: 'vs last week' }} />
-        <StatCard label="Revenue (₹)" value={stats?.revenueThisMonth ? `${(stats.revenueThisMonth / 1000).toFixed(0)}K` : '—'}
+        <StatCard label="Revenue (â‚¹)" value={stats?.revenueThisMonth ? `${(stats.revenueThisMonth / 1000).toFixed(0)}K` : 'â€”'}
           accent="green" icon={<IndianRupee size={22} />} trend={{ value: 5, label: 'vs last month' }} />
       </div>
-
       {/* Tabs */}
       <div className="tabs mb-6">
         {([['users', 'User Management', <Users size={15}/>], ['audit', 'Audit Log', <Shield size={15}/>], ['departments', 'Departments', <Building2 size={15}/>], ['health', 'System Health', <Activity size={15}/>]] as const).map(([key, label, icon]) => (
@@ -153,7 +135,6 @@ export default function AdminDashboard() {
           </button>
         ))}
       </div>
-
       {/* --- USERS TAB --- */}
       {tab === 'users' && (
         <div className="animate-fade-in">
@@ -170,11 +151,9 @@ export default function AdminDashboard() {
               </select>
               <button className="btn-secondary" onClick={load}><RefreshCw size={14} /></button>
             </div>
-
             <div className="flex items-center justify-between mb-3">
               <h2 className="section-title mb-0">Staff Directory <span className="badge-muted badge ml-2">{filtered.length}</span></h2>
             </div>
-
             {filtered.length === 0 ? <EmptyState message="No users match your filters" /> : (
               <div className="overflow-x-auto">
                 <table className="data-table">
@@ -225,7 +204,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-
       {/* --- AUDIT TAB --- */}
       {tab === 'audit' && (
         <div className="card p-5 animate-fade-in">
@@ -239,7 +217,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="font-semibold text-sm">{a.action}</span>
-                    <span className="text-sm" style={{ color: 'var(--color-muted)' }}> — {a.entityType}</span>
+                    <span className="text-sm" style={{ color: 'var(--color-muted)' }}> â€” {a.entityType}</span>
                     {a.details && <p className="text-xs mt-0.5" style={{ color: 'var(--color-muted)' }}>{a.details}</p>}
                   </div>
                   {a.createdAt && <span className="text-xs flex-shrink-0" style={{ color: 'var(--color-muted)' }}>{new Date(a.createdAt).toLocaleString()}</span>}
@@ -249,7 +227,6 @@ export default function AdminDashboard() {
           )}
         </div>
       )}
-
       {/* --- DEPARTMENTS TAB --- */}
       {tab === 'departments' && (
         <div className="card p-5 animate-fade-in">
@@ -277,7 +254,6 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-
       {/* --- HEALTH TAB --- */}
       {tab === 'health' && (
         <div className="animate-fade-in">
@@ -309,7 +285,6 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
-
           {/* Analytics Summary */}
           <div className="card p-5 mt-6">
             <h2 className="section-title">Quick Analytics</h2>
@@ -321,7 +296,7 @@ export default function AdminDashboard() {
               </div>
               <div className="p-4 rounded-xl text-center" style={{ background: 'var(--color-bg)' }}>
                 <IndianRupee size={24} className="mx-auto mb-2" style={{ color: 'var(--color-success)' }} />
-                <p className="text-2xl font-bold">₹{((stats?.revenueThisMonth ?? 0) / 1000).toFixed(0)}K</p>
+                <p className="text-2xl font-bold">â‚¹{((stats?.revenueThisMonth ?? 0) / 1000).toFixed(0)}K</p>
                 <p className="text-xs" style={{ color: 'var(--color-muted)' }}>Monthly Revenue</p>
               </div>
               <div className="p-4 rounded-xl text-center" style={{ background: 'var(--color-bg)' }}>
@@ -333,14 +308,13 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-
       {/* Create User Modal */}
       {showCreateModal && (
         <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowCreateModal(false)}>
           <div className="modal-content">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold">Create New User</h2>
-              <button className="btn-ghost btn-icon" onClick={() => setShowCreateModal(false)}>✕</button>
+              <button className="btn-ghost btn-icon" onClick={() => setShowCreateModal(false)}>âœ•</button>
             </div>
             <div className="space-y-3">
               <div>

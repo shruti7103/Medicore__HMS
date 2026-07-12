@@ -1,7 +1,8 @@
 package com.medicore.nurse.dto;
 import com.medicore.nurse.entity.*; import jakarta.validation.constraints.*; import lombok.Data;
-import java.time.LocalDateTime; import java.util.List;
+import java.time.LocalDateTime;
 public class NurseDtos {
+ @Data public static class NurseRequest { @NotBlank private String firstName; @NotBlank private String lastName; @NotBlank private String department; private String shiftPattern; }
  @Data public static class VitalsRequest { @NotNull private Long patientId; private Integer bpSystolic; private Integer bpDiastolic; private Integer pulse; private java.math.BigDecimal temperatureC; private java.math.BigDecimal weightKg; }
  @Data public static class MedLogRequest { @NotNull private Long prescriptionItemId; @NotNull private Long patientId; private String notes; }
  @Data public static class EscalateRequest { @NotNull private Long patientId; @NotNull private Long doctorId; @NotBlank private String message; }

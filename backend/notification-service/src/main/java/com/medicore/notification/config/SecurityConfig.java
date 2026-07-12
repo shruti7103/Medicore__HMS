@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+    @SuppressWarnings("null")
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -26,3 +27,4 @@ public class SecurityConfig {
         return http.build();
     }
 }
+

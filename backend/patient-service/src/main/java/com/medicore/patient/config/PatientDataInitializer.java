@@ -16,6 +16,7 @@ public class PatientDataInitializer implements CommandLineRunner {
     private final PatientRepository patientRepository;
 
     @Override
+    @SuppressWarnings("null")
     public void run(String... args) {
         if (patientRepository.count() > 0) return;
 

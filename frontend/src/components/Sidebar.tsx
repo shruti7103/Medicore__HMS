@@ -52,7 +52,7 @@ const ROLE_CONFIG: Record<string, { color: string; gradient: string; label: stri
 
 export default function Sidebar({ title, links = [] }: SidebarProps) {
   const { user, logout } = useAuth();
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('medicore_access_token');
   const { theme, toggle } = useTheme();
   const [wsConnected, setWsConnected] = useState(false);
   const [notifCount, setNotifCount] = useState(0);
@@ -61,19 +61,32 @@ export default function Sidebar({ title, links = [] }: SidebarProps) {
 
   useEffect(() => {
     if (token && user) {
+      const handleUserNotif = () => {
+        setNotifCount(n => n + 1);
+      };
+      const handleRxNotif = () => {
+        setNotifCount(n => n + 1);
+      };
+
       wsService.connect(token, () => {
         setWsConnected(true);
-        wsService.subscribe(`/topic/user/${user.id}`, () => {
-          setNotifCount(n => n + 1);
-        });
+        wsService.subscribe(`/topic/user/${user.id}`, handleUserNotif);
         if (user.role === 'PHARMACIST') {
-          wsService.subscribe('/topic/prescriptions', () => {
-            setNotifCount(n => n + 1);
-          });
+          wsService.subscribe('/topic/prescriptions', handleRxNotif);
         }
       }, () => setWsConnected(false));
+
+      return () => {
+        wsService.unsubscribe(`/topic/user/${user.id}`, handleUserNotif);
+        if (user.role === 'PHARMACIST') {
+          wsService.unsubscribe('/topic/prescriptions', handleRxNotif);
+        }
+        if (!localStorage.getItem('medicore_access_token')) {
+          wsService.disconnect();
+          setWsConnected(false);
+        }
+      };
     }
-    return () => { wsService.disconnect(); setWsConnected(false); };
   }, [token, user]);
 
   return (
