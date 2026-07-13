@@ -38,6 +38,10 @@
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <jjwt.version>0.12.5</jjwt.version>
+
+         <sonar.projectKey>Medicore_HMS</sonar.projectKey>
+    <sonar.projectName>Medicore_HMS</sonar.projectName>
+    <sonar.host.url>http://localhost:9000</sonar.host.url>
     </properties>
 
     <dependencyManagement>
